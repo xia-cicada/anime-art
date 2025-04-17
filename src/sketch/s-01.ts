@@ -1,16 +1,34 @@
 import { animate } from 'animejs'
 import { getEl } from '../utils'
+import GUI from 'lil-gui'
 
 export const draw = () => {
+  const defaultText = '(ﾉ◕ヮ◕)ﾉ*:･ﾟ✧'
+  let clear = initAnime(defaultText)
+  const gui = new GUI()
+  const tools = {
+    text: defaultText,
+  }
+  gui.add(tools, 'text').onChange((v: string) => {
+    clear()
+    clear = initAnime(v)
+  })
+  return clear
+}
+
+const initAnime = (text: string) => {
+  text = text || '...'
   const el = getEl()
   const ps = document.createElement('div')
-  const word = '(ﾉ◕ヮ◕)ﾉ*:･ﾟ✧'
+  const fragment = document.createDocumentFragment()
+  const word = text
   for (let i = 0, len = word.length; i < len; i++) {
     const p = document.createElement('span')
     p.className = 'p'
     p.textContent = word[i]
-    ps.appendChild(p)
+    fragment.appendChild(p)
   }
+  ps.appendChild(fragment)
   el.appendChild(ps)
 
   const a1 = animate(el, {
@@ -20,6 +38,7 @@ export const draw = () => {
     placeItems: 'center',
     fontSize: '3rem',
     duration: 0,
+    fontFamily: 'mono',
   })
 
   const a2 = animate(el.querySelectorAll('.p'), {
@@ -45,5 +64,6 @@ export const draw = () => {
   return () => {
     a1.cancel()
     a2.cancel()
+    el.replaceChildren()
   }
 }
