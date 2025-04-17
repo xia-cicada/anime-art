@@ -8,14 +8,17 @@ interface Config {
   fg: string
 }
 
+export const title = '字符跳动'
+
 export const draw = () => {
+  document.title = title
   const config: Config = {
     text: '(ﾉ◕ヮ◕)ﾉ*:･ﾟ✧',
     bg: '#fcd337',
     fg: '#101010',
   }
   const gui = new GUI()
-  gui.title('字符跳动')
+  gui.title(title)
   gui.add(config, 'text').name('文本')
   gui.addColor(config, 'bg').name('背景色')
   gui.addColor(config, 'fg').name('文字颜色')
