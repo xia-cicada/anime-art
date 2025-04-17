@@ -2,26 +2,39 @@ import { animate } from 'animejs'
 import { getEl } from '../utils'
 import GUI from 'lil-gui'
 
+interface Config {
+  text: string
+  bg: string
+  fg: string
+}
+
 export const draw = () => {
-  const defaultText = '(ﾉ◕ヮ◕)ﾉ*:･ﾟ✧'
-  let clear = initAnime(defaultText)
-  const gui = new GUI()
-  const tools = {
-    text: defaultText,
+  const config: Config = {
+    text: '(ﾉ◕ヮ◕)ﾉ*:･ﾟ✧',
+    bg: '#fcd337',
+    fg: '#101010',
   }
-  gui.add(tools, 'text').onChange((v: string) => {
+  const gui = new GUI()
+  gui.title('字符跳动')
+  gui.add(config, 'text').name('文本')
+  gui.addColor(config, 'bg').name('背景色')
+  gui.addColor(config, 'fg').name('文字颜色')
+  gui.add({ reset: () => gui.reset() }, 'reset').name('重置')
+
+  let clear = initAnime(config)
+  gui.onChange(() => {
     clear()
-    clear = initAnime(v)
+    clear = initAnime(config)
   })
+
   return clear
 }
 
-const initAnime = (text: string) => {
-  text = text || '...'
+const initAnime = (config: Config) => {
   const el = getEl()
   const ps = document.createElement('div')
   const fragment = document.createDocumentFragment()
-  const word = text
+  const word = config.text || '...'
   for (let i = 0, len = word.length; i < len; i++) {
     const p = document.createElement('span')
     p.className = 'p'
@@ -32,8 +45,8 @@ const initAnime = (text: string) => {
   el.appendChild(ps)
 
   const a1 = animate(el, {
-    backgroundColor: '#fcd337',
-    color: '#202020',
+    backgroundColor: config.bg,
+    color: config.fg,
     display: 'grid',
     placeItems: 'center',
     fontSize: '3rem',
