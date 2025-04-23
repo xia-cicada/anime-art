@@ -1,4 +1,4 @@
-import { draw } from './sketch/s-01'
+import { draw } from './sketch/s-02'
 import './style.css'
 
 draw()
