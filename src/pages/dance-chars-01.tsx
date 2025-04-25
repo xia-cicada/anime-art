@@ -10,7 +10,7 @@ interface Config {
 
 export const title = '字符跳动'
 
-function DanceChars() {
+function DanceChars01() {
   const initialConfig: Config = {
     text: '(ﾉ◕ヮ◕)ﾉ*:･ﾟ✧',
     bg: '#fcd337',
@@ -48,7 +48,7 @@ function DanceChars() {
   )
 
   return (
-    <div class="screen-ctn all-center dance-char" style={wrapStyle()}>
+    <div class="sketch1 dance-chars-01" style={wrapStyle()}>
       <div>
         <For each={word().split('')}>
           {(char) => <span class="c">{char}</span>}
@@ -59,7 +59,7 @@ function DanceChars() {
 }
 
 const refreshAnimate = () => {
-  const a = animate('.dance-char .c', {
+  const a = animate('.dance-chars-01 .c', {
     display: 'inline-block',
     margin: [
       { to: '0 0.3em', ease: 'outExpo', duration: 600 },
@@ -82,4 +82,4 @@ const refreshAnimate = () => {
   return () => a.cancel()
 }
 
-export default DanceChars
+export default DanceChars01

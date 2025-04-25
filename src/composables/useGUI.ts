@@ -2,7 +2,7 @@ import { onCleanup } from 'solid-js'
 import GUI from 'lil-gui'
 
 // 控件类型
-type ControlType = 'text' | 'number' | 'boolean' | 'color' | 'range'
+type ControlType = 'color' | 'range' | string | undefined
 
 // 控件配置
 interface ControlConfig {
@@ -29,31 +29,26 @@ export function useGUI<T extends object>(
   options: GUIOptions = {}
 ) {
   const gui = new GUI(options)
-  if (options.title)
+  if (options.title) {
+    document.title = options.title
     gui.title(options.title)
+  }
 
-    // 遍历 config 的每个属性
+  // 遍历 config 的每个属性
   ;(Object.keys(config) as Array<keyof T>).forEach((key) => {
     const value = config[key]
     const controlConfig = configMap[key] || {}
-
-    // 默认根据值类型推断控件类型
-    let type: ControlType =
-      controlConfig.type ||
-      (typeof value === 'string'
-        ? 'text'
-        : typeof value === 'number'
-        ? 'number'
-        : typeof value === 'boolean'
-        ? 'boolean'
-        : 'text')
+    let type: ControlType = controlConfig.type
 
     // 特殊处理颜色类型（支持 hex/rgb 等格式）
-    if (
-      type === 'color' ||
-      (typeof value === 'string' && value.startsWith('#'))
-    ) {
+    if (typeof value === 'string' && value.startsWith('#')) {
       type = 'color'
+    } else if (
+      typeof value === 'number' &&
+      controlConfig.min !== undefined &&
+      controlConfig.max !== undefined
+    ) {
+      type = 'range'
     }
 
     // 创建控制器
