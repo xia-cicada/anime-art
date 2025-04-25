@@ -1,6 +1,6 @@
 import { animate } from 'animejs'
-import GUI from 'lil-gui'
-import { For, createEffect, createSignal, onMount } from 'solid-js'
+import { For, createEffect, createMemo, createSignal, on } from 'solid-js'
+import { useGUI } from '../composables/useGUI'
 
 interface Config {
   text: string
@@ -11,24 +11,26 @@ interface Config {
 export const title = '字符跳动'
 
 function DanceChars() {
-  document.title = title
-  const config: Config = {
+  const initialConfig: Config = {
     text: '(ﾉ◕ヮ◕)ﾉ*:･ﾟ✧',
     bg: '#fcd337',
     fg: '#101010',
   }
-  const [config2, setConfig2] = createSignal({ ...config })
+  const [config, setConfig] = createSignal({ ...initialConfig })
+  const { onChange } = useGUI<Config>(
+    initialConfig,
+    {
+      text: { label: '文本' },
+      bg: { label: '背景色', type: 'color' },
+      fg: { label: '前景色', type: 'color' },
+    },
+    { title }
+  )
+  onChange((newConfig) => setConfig(newConfig))
 
-  const gui = new GUI()
-  gui.title(title)
-  gui.add(config, 'text').name('文本')
-  gui.addColor(config, 'bg').name('背景色')
-  gui.addColor(config, 'fg').name('文字颜色')
-  gui.add({ reset: () => gui.reset() }, 'reset').name('重置')
-
-  const word = () => config2().text
+  const word = createMemo(() => config().text)
   const wrapStyle = () => {
-    const { bg, fg } = config2()
+    const { bg, fg } = config()
     return {
       'font-size': '2rem',
       'background-color': bg,
@@ -37,16 +39,13 @@ function DanceChars() {
   }
 
   let clear: () => void
-  onMount(() => {
-    clear = refreshAnimate()
-  })
-  gui.onChange(() => {
-    setConfig2({ ...config })
-  })
-  createEffect(() => {
-    clear()
-    clear = refreshAnimate()
-  }, config2)
+
+  createEffect(
+    on(word, () => {
+      clear?.()
+      clear = refreshAnimate()
+    })
+  )
 
   return (
     <div class="screen-ctn all-center dance-char" style={wrapStyle()}>

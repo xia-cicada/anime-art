@@ -1,6 +1,6 @@
 /* @refresh reload */
+import './index.scss'
 import { render } from 'solid-js/web'
-import './index.css'
 import { Route, Router } from '@solidjs/router'
 import DanceChars from './pages/dance-chars'
 
