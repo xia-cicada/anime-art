@@ -12,11 +12,11 @@ function Archery01() {
   const config0: Config = { tension: 0.8, shot: () => shot() }
 
   const [config, setConfig] = createSignal({ ...config0 })
-  const { onChange } = useGUI(
+  const { model, pane, onChange } = useGUI(
     config0,
     {
       tension: { label: '绷紧程度', min: 0, max: 1, step: 0.1 },
-      shot: { label: '发射' },
+      shot: { title: '发射' },
     },
     { title }
   )
@@ -24,11 +24,10 @@ function Archery01() {
   const pointX = () => (1 - config().tension) * 35 + 15
 
   const shot = () => {
-    const tempConfig = config()
-    const t = animate(tempConfig, {
+    const t = animate(model, {
       tension: 0,
       onUpdate: () => {
-        setConfig({ ...tempConfig })
+        pane.refresh()
       },
       ease: eases.outQuad,
       duration: 50,

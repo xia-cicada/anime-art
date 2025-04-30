@@ -21,8 +21,8 @@ function DanceChars01() {
     initialConfig,
     {
       text: { label: '文本' },
-      bg: { label: '背景色', type: 'color' },
-      fg: { label: '前景色', type: 'color' },
+      bg: { label: '背景色' },
+      fg: { label: '前景色' },
     },
     { title }
   )

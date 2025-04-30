@@ -11,10 +11,12 @@
   "dependencies": {
     "@solidjs/router": "^0.15.3",
     "animejs": "^4.0.2",
-    "lil-gui": "^0.20.0",
-    "solid-js": "^1.9.5"
+    "es-toolkit": "^1.36.0",
+    "solid-js": "^1.9.5",
+    "tweakpane": "^4.0.5"
   },
   "devDependencies": {
+    "@tweakpane/core": "^2.0.5",
     "sass": "^1.87.0",
     "typescript": "~5.8.3",
     "vite": "^6.3.3",
