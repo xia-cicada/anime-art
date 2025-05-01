@@ -22,18 +22,24 @@ export default function Bezier01() {
     { x: 150, y: 50 },
     { x: 250, y: 200 },
   ])
-  const ponitLens = createMemo(() => points().length)
   const bezierD = () => {
     const [p0, p1, p2] = points()
+    if (!p0) return ''
     return `M ${p0.x},${p0.y} Q ${p1.x},${p1.y} ${p2.x},${p2.y}`
+  }
+  const line1D = () => {
+    const [p0, p1, p2] = points()
+    if (!p0) return ''
+    return `M ${p0.x},${p0.y} L ${p1.x},${p1.y} L ${p2.x},${p2.y}`
   }
 
   const animationList: Draggable[] = []
+  const [refreshKey, setRefreshKey] = createSignal(Date.now())
   createEffect(
-    on(ponitLens, (len) => {
+    on(refreshKey, () => {
       animationList.forEach((d) => d.disable())
       animationList.splice(0)
-      for (let i = 0; i < len; i++) {
+      for (let i = 0; i < points().length; i++) {
         let startX: number
         let startY: number
         const animation = createDraggable(`#point-${i}`, {
@@ -49,13 +55,20 @@ export default function Bezier01() {
             startY = point.y
           },
           onUpdate: (e) => {
-            console.log(e.destX, e.destY)
             const newPoints = [...points()]
             newPoints.splice(i, 1, {
               x: startX + e.destX,
               y: startY + e.destY,
             })
             setPoints(newPoints)
+          },
+          onSettle: () => {
+            const oldPoints = [...points()]
+            setPoints([])
+            queueMicrotask(() => {
+              setPoints(oldPoints)
+              setRefreshKey(Date.now())
+            })
           },
         })
         animationList.push(animation)
@@ -74,6 +87,13 @@ export default function Bezier01() {
         xmlns="http://www.w3.org/2000/svg"
         style={{ outline: '1px solid #eee' }}
       >
+        <path
+          d={line1D()}
+          stroke="#C04134"
+          fill="none"
+          stroke-width="3"
+          stroke-dasharray="5,5"
+        ></path>
         <path
           d={bezierD()}
           stroke="#303030"

@@ -4,6 +4,7 @@ import { routesList } from './routes'
 import { For } from 'solid-js'
 import Nav from './Nav'
 import { render } from 'solid-js/web'
+import './index.scss'
 
 render(
   () => (
