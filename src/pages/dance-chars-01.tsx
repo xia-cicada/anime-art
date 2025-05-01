@@ -8,7 +8,7 @@ interface Config {
   fg: string
 }
 
-export const title = '字符跳动'
+export const title = 'Dance Chars 01'
 
 function DanceChars01() {
   const initialConfig: Config = {

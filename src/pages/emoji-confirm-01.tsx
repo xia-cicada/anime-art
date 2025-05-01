@@ -1,3 +1,5 @@
+export const title = 'Emoji Confirm 01'
+
 export default function EmojiConfirm01() {
   return (
     <div class="sketch1 all-center emoji-confirm-01">

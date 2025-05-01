@@ -2,7 +2,7 @@ import { createSignal } from 'solid-js'
 import { useGUI } from '../composables/useGUI'
 import { animate, eases } from 'animejs'
 
-export const title = 'ARCHERY'
+export const title = 'Archery 01'
 
 interface Config {
   tension: number

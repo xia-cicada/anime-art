@@ -1,13 +1,8 @@
 import { createDraggable, Draggable } from 'animejs'
-import {
-  createEffect,
-  createMemo,
-  createSignal,
-  Index,
-  on,
-  onMount,
-} from 'solid-js'
+import { createEffect, createMemo, createSignal, Index, on } from 'solid-js'
 import { useGUI } from '../composables/useGUI'
+
+export const title = 'Bezier 01'
 
 export default function Bezier01() {
   const originalConfig = { pointR: 4 }
@@ -16,7 +11,7 @@ export default function Bezier01() {
   const { onChange } = useGUI(
     originalConfig,
     { pointR: { label: '锚点半径', min: 2, max: 10, step: 1 } },
-    { title: 'Bezier' }
+    { title }
   )
   onChange((v) => {
     setConfig(v)
