@@ -4,33 +4,90 @@ import { useGUI } from '../composables/useGUI'
 
 export const title = 'Bezier 01'
 
+interface Config {
+  pointR: number
+  canvasSize: number
+}
 export default function Bezier01() {
-  const originalConfig = { pointR: 4 }
-
+  const originalConfig: Config = { pointR: 4, canvasSize: 300 }
   const [config, setConfig] = createSignal({ ...originalConfig })
   const { onChange } = useGUI(
     originalConfig,
-    { pointR: { label: '锚点半径', min: 2, max: 10, step: 1 } },
+    {
+      pointR: { label: '锚点半径', min: 2, max: 10, step: 1 },
+      canvasSize: {
+        label: '画布尺寸',
+        min: 200,
+        max: 400,
+        step: 20,
+        disabled: true,
+      },
+    },
     { title }
   )
   onChange((v) => {
     setConfig(v)
   })
+  return (
+    <div class="sketch1 all-center">
+      <div
+        style={{
+          display: 'grid',
+          'grid-template-columns': 'auto auto',
+          gap: '0.5rem',
+        }}
+      >
+        <Bezier
+          title="二次贝塞尔"
+          degree={2}
+          key="degree2"
+          config={config()}
+        ></Bezier>
+        <Bezier
+          title="三次贝塞尔"
+          degree={3}
+          key="degree3"
+          config={config()}
+        ></Bezier>
+      </div>
+    </div>
+  )
+}
 
-  const [points, setPoints] = createSignal<{ x: number; y: number }[]>([
-    { x: 50, y: 200 },
-    { x: 150, y: 50 },
-    { x: 250, y: 200 },
-  ])
+function Bezier(props: {
+  config: Config
+  key: string
+  degree: 2 | 3
+  title: string
+}) {
+  const canvasSize = createMemo(() => props.config.canvasSize)
+  const [points, setPoints] = createSignal<{ x: number; y: number }[]>(
+    props.degree === 2
+      ? [
+          { x: 0.2 * canvasSize(), y: 0.6 * canvasSize() },
+          { x: 0.5 * canvasSize(), y: 0.3 * canvasSize() },
+          { x: 0.8 * canvasSize(), y: 0.6 * canvasSize() },
+        ]
+      : [
+          { x: 0.2 * canvasSize(), y: 0.6 * canvasSize() },
+          { x: 0.4 * canvasSize(), y: 0.3 * canvasSize() },
+          { x: 0.6 * canvasSize(), y: 0.3 * canvasSize() },
+          { x: 0.8 * canvasSize(), y: 0.6 * canvasSize() },
+        ]
+  )
   const bezierD = () => {
-    const [p0, p1, p2] = points()
+    const [p0, p1, p2, p3] = points()
     if (!p0) return ''
-    return `M ${p0.x},${p0.y} Q ${p1.x},${p1.y} ${p2.x},${p2.y}`
+    return props.degree === 2
+      ? `M ${p0.x},${p0.y} Q ${p1.x},${p1.y} ${p2.x},${p2.y}`
+      : `M ${p0.x},${p0.y} C ${p1.x},${p1.y} ${p2.x},${p2.y} ${p3.x},${p3.y}`
   }
   const line1D = () => {
-    const [p0, p1, p2] = points()
+    const [p0, p1, p2, p3] = points()
     if (!p0) return ''
-    return `M ${p0.x},${p0.y} L ${p1.x},${p1.y} L ${p2.x},${p2.y}`
+    return props.degree === 2
+      ? `M ${p0.x},${p0.y} L ${p1.x},${p1.y} L ${p2.x},${p2.y}`
+      : `M ${p0.x},${p0.y} L ${p1.x},${p1.y} M ${p2.x},${p2.y} L ${p3.x},${p3.y}`
   }
 
   const animationList: Draggable[] = []
@@ -42,8 +99,8 @@ export default function Bezier01() {
       for (let i = 0; i < points().length; i++) {
         let startX: number
         let startY: number
-        const animation = createDraggable(`#point-${i}`, {
-          container: '#container',
+        const animation = createDraggable(`#${props.key}-point-${i}`, {
+          container: `#${props.key}-container`,
           containerPadding: [10, 10, 10, 10],
           cursor: {
             onHover: 'default',
@@ -76,14 +133,17 @@ export default function Bezier01() {
     })
   )
 
-  const pointR = createMemo(() => config().pointR)
+  const pointR = createMemo(() => props.config.pointR)
   return (
-    <div class="sketch1 all-center">
+    <div>
+      <div style={{ 'margin-bottom': '0.5rem', 'text-align': 'center' }}>
+        {props.title}
+      </div>
       <svg
-        id="container"
-        width="320"
-        height="320"
-        viewBox="-10 -10 320 320"
+        id={`${props.key}-container`}
+        width={canvasSize()}
+        height={canvasSize()}
+        viewBox={`-10 -10 ${canvasSize()} ${canvasSize()}`}
         xmlns="http://www.w3.org/2000/svg"
         style={{ outline: '1px solid #eee' }}
       >
@@ -109,7 +169,7 @@ export default function Bezier01() {
                 cx={x}
                 cy={y}
                 r={pointR()}
-                id={`point-${i}`}
+                id={`${props.key}-point-${i}`}
                 fill="#303030"
               ></circle>
             )
